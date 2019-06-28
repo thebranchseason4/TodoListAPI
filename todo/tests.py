@@ -44,7 +44,7 @@ class TodoListTestCase(APITestCase):
         """
         date = datetime.now()
         url = reverse('todolist-list')
-        data = {'creation_date': date, 'list_name': 'test1', }
+        data = {'date_created': date, 'list_name': 'test1', }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(TodoList.objects.count(), 1)

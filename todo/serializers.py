@@ -11,10 +11,11 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class TodoListSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
+    tasks = TaskSerializer(many=True)
 
     class Meta:
         model = TodoList
-        fields = ('id', 'owner', 'list_name', 'creation_date')
+        fields = ('id', 'owner', 'list_name', 'date_created', 'tasks')
 
 
 

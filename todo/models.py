@@ -27,12 +27,10 @@ class Task(models.Model):
     date = models.DateTimeField('date created', default=datetime.now())
     priority = models.IntegerField(choices=PRIORITY_CHOICES, default=MEDIUM)
     done = models.BooleanField(default=False)
-    list = "list"
+    list = models.ForeignKey('TodoList', related_name="tasks", on_delete=models.SET_NULL, null=True)
 
     class Meta:
         ordering = ('priority',)
-
-    pass
 
 
 class Tag(models.Model):

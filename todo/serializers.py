@@ -11,11 +11,9 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class TodoListSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.username')
-    tasks = TaskSerializer(many=True)
+    tasks = TaskSerializer(many=True, read_only=True)
+    # TODO: implement create method to remove read only
 
     class Meta:
         model = TodoList
-        fields = ('id', 'owner', 'list_name', 'date_created', 'tasks')
-
-
-
+        fields = ('id', 'owner', 'list_name', 'date_created','tasks')

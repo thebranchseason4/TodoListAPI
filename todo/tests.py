@@ -1,10 +1,10 @@
-from datetime import datetime
 
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from django.test import TestCase
 from .models import *
+from datetime import datetime
 
 
 class TaskModelTest(TestCase):
@@ -44,10 +44,10 @@ class TodoListTestCase(APITestCase):
         """
         date = datetime.now()
         url = reverse('todolist-list')
-        data = {'date_created': date, 'list_name': 'test1', }
+        data = {'date_created': date, 'list_name': 'test1','tasks': []}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(TodoList.objects.count(), 1)
-        self.assertEqual(TodoList.objects.first().creation_date.replace(tzinfo=None), date)
+        self.assertEqual(TodoList.objects.first().date_created.replace(tzinfo=None), date)
         self.assertEqual(TodoList.objects.first().list_name, 'test1')
         self.assertEqual(TodoList.objects.first().owner, None)

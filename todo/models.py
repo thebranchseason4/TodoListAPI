@@ -10,4 +10,5 @@ class Task(models.Model):
 
 
 class Tag(models.Model):
-    pass
+    text = models.CharField(max_length=15)
+    task = models.ManyToManyField(Task, related_name='tags')

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from todo.models import TodoList
-from .models import Tag
+from .models import Tag, Task
 
 
 class TodoListSerializer(serializers.ModelSerializer):
@@ -12,7 +12,7 @@ class TodoListSerializer(serializers.ModelSerializer):
 
 
 class TagSerializer(serializers.ModelSerializer):
-    task = serializers.PrimaryKeyRelatedField(many=True)
+    task = serializers.PrimaryKeyRelatedField(queryset=Task.objects.all(), many=True)
 
     class Meta:
         model = Tag

@@ -1,9 +1,9 @@
-# Create your tests here.
 from rest_framework.test import APITestCase
 
-class PracticesTests(APITestCase):
-    def passTravisTest(self):
+
+class PracticesTestCase(APITestCase):
+    def test_pass(self):
         self.assertEqual(1, 1)
 
-    def failedTravisTest(self):
+    def test_fail(self):
         self.assertEqual(1, 2)

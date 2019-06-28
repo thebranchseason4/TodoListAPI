@@ -2,20 +2,13 @@ language: python
 python:
   - "3.6"
   - "3.6-dev"
-
-before_install:
-
 install:
   - pip install -r requirements.txt
-
 before_script:
   - python manage.py makemigrations
   - python manage.py migrate
-
-script: python manage.py tests.py
-
-after_script:
-
-
-
-branches: only: ["master"]
+script:
+  - pytest
+branches:
+  only:
+  - master

@@ -8,7 +8,7 @@ before_script:
   - python manage.py makemigrations
   - python manage.py migrate
 script:
-  - pytest
+  - python manage.py test
 branches:
   only:
   - master

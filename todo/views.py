@@ -1,6 +1,11 @@
 from rest_framework import viewsets
-from .models import Tag
-from .serializers import TagSerializer
+from .models import TodoList, Tag
+from .serializers import TodoListSerializer, TagSerializer
+
+
+class TodoListViewSet(viewsets.ModelViewSet):
+    queryset = TodoList.objects.all()
+    serializer_class = TodoListSerializer
 
 
 class TagViewSet(viewsets.ModelViewSet):

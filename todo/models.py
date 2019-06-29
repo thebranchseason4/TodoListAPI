@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from django.contrib.auth.models import User
 from django.utils import timezone
 
 from django.db import models
@@ -18,7 +21,9 @@ PRIORITY_CHOICES = (
 
 
 class TodoList(models.Model):
-    pass
+    owner = models.ForeignKey(User, on_delete=SET_NULL, related_name='lists', null=True)
+    list_name = models.CharField(max_length=255, default="")
+    creation_date = models.DateTimeField('date_created', default=datetime.now())
 
 
 class Task(models.Model):

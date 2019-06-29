@@ -21,5 +21,4 @@ import todo
 urlpatterns = [
     path('api', include('todo.urls')),
     path('admin/', admin.site.urls),
-    path('', include('todo.urls')),
 ]

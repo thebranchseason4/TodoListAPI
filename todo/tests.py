@@ -1,4 +1,3 @@
-from django.test import TestCase
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
@@ -6,7 +5,7 @@ from rest_framework.test import APITestCase
 from .models import *
 
 
-class TaskModelTest(TestCase):
+class TaskModelTest(APITestCase):
 
     def test_task_created_with_proper_title_and_description(self):
         task = Task(title="Play Rust", description="Play Rust after work")
@@ -35,13 +34,37 @@ class TaskModelTest(TestCase):
         tasks = list(Task.objects.all())
         self.assertEquals(tasks, ordered)
 
+    def test_task_with_list(self):
+        user = User(first_name='Name', last_name='Last Name')
+        list = TodoList(list_name='test', owner=user)
+        task1 = Task(title='test1', list=list)
+        task2 = Task(title='test2', list=list)
+        self.assertEquals(task1.list, list)
+        self.assertEquals(task2.list, list)
+
+    def test_task_with_response(self):
+        user = User(first_name='Name', last_name='Last Name')
+        user.save()
+        list = TodoList(list_name='test', owner=user)
+        list.save()
+        date = datetime.now()
+        url = reverse('task-list')
+        data = {'title': 'test', 'description': 'this is a test', 'date': date, 'list': list.id}
+        response = self.client.post(url, data, format='json')
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Task.objects.count(), 1)
+        self.assertEqual(Task.objects.first().date.replace(tzinfo=None), date)
+        self.assertEqual(Task.objects.first().title, 'test')
+        self.assertEqual(Task.objects.first().description, 'this is a test')
+        self.assertEqual(Task.objects.first().list, list)
+
 
 class TodoListTestCase(APITestCase):
     def test_create_todo_list(self):
         """
         Ensure we can create a new TodoList object.
         """
-        user = User.objects.create(username='jouse', email="email@email.com", password='password')
+        user= User.objects.create(username='jouse', email="email@email.com", password='password')
         date = datetime.now()
         url = reverse('todolist-list')
         data = {'owner': 1, 'date_created': date, 'list_name': 'test1', 'tasks': []}

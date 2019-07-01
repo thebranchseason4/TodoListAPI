@@ -41,15 +41,16 @@ class TodoListTestCase(APITestCase):
         """
         Ensure we can create a new TodoList object.
         """
+        user = User.objects.create(username='jouse', email="email@email.com", password='password')
         date = datetime.now()
         url = reverse('todolist-list')
-        data = {'creation_date': date, 'list_name': 'test1', }
+        data = {'owner': 1, 'date_created': date, 'list_name': 'test1', 'tasks': []}
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(TodoList.objects.count(), 1)
-        self.assertEqual(TodoList.objects.first().creation_date.replace(tzinfo=None), date)
+        self.assertEqual(TodoList.objects.first().date_created.replace(tzinfo=None), date)
         self.assertEqual(TodoList.objects.first().list_name, 'test1')
-        self.assertEqual(TodoList.objects.first().owner, None)
+        self.assertEqual(TodoList.objects.first().owner, user)
 
 
 class UserTestCase(APITestCase):

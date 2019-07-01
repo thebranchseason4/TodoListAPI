@@ -80,7 +80,7 @@ class UserTestCase(APITestCase):
 
     def test_create_user(self):
         url = reverse('user-list')
-        data = {'username': 'test-user', 'password': 'test1234', 'email': 'test@user.com', 'lists': []}
+        data = {'username': 'test-user', 'password': 'test1234', 'email': 'test@user.com'}
         response = self.client.post(url, data, format='json')
         usuario = User.objects.first()
         self.assertEquals(response.status_code, status.HTTP_201_CREATED)

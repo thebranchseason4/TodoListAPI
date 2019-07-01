@@ -4,9 +4,10 @@ from todo import views
 
 
 router = DefaultRouter()
+router.register(r'tasks', views.TaskViewSet)
 router.register(r'TodoLists', views.TodoListViewSet)
 router.register(r'tags', views.TagViewSet)
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(router.urls))
 ]

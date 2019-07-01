@@ -8,7 +8,7 @@ from todo.serializers import TodoListSerializer
 from todo.serializers import UserSerializer
 
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 

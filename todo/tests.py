@@ -50,3 +50,22 @@ class TodoListTestCase(APITestCase):
         self.assertEqual(TodoList.objects.first().creation_date.replace(tzinfo=None), date)
         self.assertEqual(TodoList.objects.first().list_name, 'test1')
         self.assertEqual(TodoList.objects.first().owner, None)
+
+
+class UserTestCase(APITestCase):
+
+    def test_create_user(self):
+        url = reverse('user-list')
+        data = {'username': 'test-user', 'password': 'test1234', 'email': 'test@user.com', 'lists': []}
+        response = self.client.post(url, data, format='json')
+        usuario = User.objects.first()
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+        self.assertEquals(usuario.username, 'test-user')
+
+    def test_get_user(self):
+        user = User.objects.create(username='test-user', password='test1234', email='test@user.com')
+        url = reverse('user-detail', args=(1, ))
+        response = self.client.get(url, format='json')
+        self.assertEquals(response.status_code, status.HTTP_200_OK)
+        self.assertEquals(response.data['username'], user.username)
+        self.assertEquals(response.data['lists'], [])

@@ -21,6 +21,8 @@ class TodoListSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     # user fields: 'id', 'first_name', 'last_name', 'email', 'password'
+    lists = TodoListSerializer(many=True, read_only=True)
+
     class Meta:
         model = User
         fields = ('id', 'username', 'lists')

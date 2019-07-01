@@ -60,10 +60,12 @@ class TaskModelTest(APITestCase):
         user_data = {'username': 'username', 'password': 'password', 'email': 'email@domain.com'}
         user_response = self.client.post(user_url, user_data, format='json')
         self.assertEquals(user_response.status_code, status.HTTP_201_CREATED)
+
         list_url = reverse('todolist-list')
         list_data = {'owner': user_response.data['id'], 'list_name': 'test1'}
         list_response = self.client.post(list_url, list_data, format='json')
         self.assertEquals(list_response.status_code, status.HTTP_201_CREATED)
+
         task_url = reverse('task-list')
         task_data = {'priority': MEDIUM, 'title': 'third', 'description': 'description', 'list': list_response.data['id']}
         task_response = self.client.post(task_url, task_data, format='json')
@@ -91,7 +93,7 @@ class TodoListTestCase(APITestCase):
         """
         Ensure we can create a new TodoList object.
         """
-        user= User.objects.create(username='jouse', email="email@email.com", password='password')
+        user = User.objects.create(username='jouse', email="email@email.com", password='password')
         date = datetime.now()
         url = reverse('todolist-list')
         data = {'owner': 1, 'date_created': date, 'list_name': 'test1', 'tasks': []}

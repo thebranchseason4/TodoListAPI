@@ -89,8 +89,8 @@ class TagsTests(APITestCase):
         test_tag = Tag.objects.create(text="test tag")
         test_tag.task.add(self.task_1)
         url = reverse('tag-detail', args=(test_tag.pk,))
-        data = {'text': 'new test put tag', 'task': [self.task_2.pk, ]}
+        data = {'text': 'new tag', 'task': [self.task_2.pk, ]}
         response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data, {'id': test_tag.pk, 'text': "new test put tag", 'task': [self.task_2.pk, ]})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'id': test_tag.pk, 'text': "new tag", 'task': [self.task_2.pk, ]})
 

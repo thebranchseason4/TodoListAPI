@@ -35,6 +35,19 @@ class TaskModelTest(APITestCase):
         tasks = list(Task.objects.all())
         self.assertEquals(tasks, ordered)
 
+    def test_task_ordering_post_request(self):
+        url = reverse('task-list')
+        self.client.post(url, {'priority': MEDIUM, 'title': 'third', 'description': 'description'}, format='json')
+        self.client.post(url, {'priority': LOW, 'title': 'fouth', 'description': 'description'}, format='json')
+        self.client.post(url, {'priority': TOP, 'title': 'first', 'description': 'description'}, format='json')
+        self.client.post(url, {'priority': VERY_LOW, 'title': 'fifth', 'description': 'description'}, format='json')
+        self.client.post(url, {'priority': HIGH, 'title': 'second', 'description': 'description'}, format='json')
+        response = self.client.get(url, format='json')
+        tasks = response.data
+        tasks_priorities = [task['priority'] for task in tasks]
+        self.assertEquals(all([tasks_priorities[i] >= tasks_priorities[i+1] for i in
+                               range(len(tasks_priorities)-1)]), True)
+
     def test_task_with_list(self):
         user = User(first_name='Name', last_name='Last Name')
         list = TodoList(list_name='test', owner=user)
@@ -42,6 +55,20 @@ class TaskModelTest(APITestCase):
         task2 = Task(title='test2', list=list)
         self.assertEquals(task1.list, list)
         self.assertEquals(task2.list, list)
+
+    def test_task_with_list_api(self):
+        user_url = reverse('user-list')
+        user_data = {'username': 'username', 'password': 'password', 'email': 'email@domain.com'}
+        user_response = self.client.post(user_url, user_data, format='json')
+        self.assertEquals(user_response.status_code, status.HTTP_201_CREATED)
+        list_url = reverse('todolist-list')
+        list_data = {'owner': user_response.data['id'], 'list_name': 'test1'}
+        list_response = self.client.post(list_url, list_data, format='json')
+        self.assertEquals(list_response.status_code, status.HTTP_201_CREATED)
+        task_url = reverse('task-list')
+        task_data = {'priority': MEDIUM, 'title': 'third', 'description': 'description', 'list': list_response.data['id']}
+        task_response = self.client.post(task_url, task_data, format='json')
+        self.assertEquals(task_response.status_code, status.HTTP_201_CREATED)
 
     def test_task_with_response(self):
         user = User(first_name='Name', last_name='Last Name')

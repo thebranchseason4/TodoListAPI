@@ -53,3 +53,5 @@ class TodoListTestCase(APITestCase):
         self.assertEqual(TodoList.objects.first().date_created.replace(tzinfo=None), date)
         self.assertEqual(TodoList.objects.first().list_name, 'test1')
         self.assertEqual(TodoList.objects.first().owner, user)
+
+        #bops

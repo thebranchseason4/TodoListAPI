@@ -61,10 +61,12 @@ class TaskModelTest(APITestCase):
         user_data = {'username': 'username', 'password': 'password', 'email': 'email@domain.com'}
         user_response = self.client.post(user_url, user_data, format='json')
         self.assertEquals(user_response.status_code, status.HTTP_201_CREATED)
+
         list_url = reverse('todolist-list')
         list_data = {'owner': user_response.data['id'], 'list_name': 'test1'}
         list_response = self.client.post(list_url, list_data, format='json')
         self.assertEquals(list_response.status_code, status.HTTP_201_CREATED)
+
         task_url = reverse('task-list')
         task_data = {'priority': MEDIUM, 'title': 'third', 'description': 'description', 'list': list_response.data['id']}
         task_response = self.client.post(task_url, task_data, format='json')
@@ -92,7 +94,7 @@ class TodoListTestCase(APITestCase):
         """
         Ensure we can create a new TodoList object.
         """
-        user= User.objects.create(username='jouse', email="email@email.com", password='password')
+        user = User.objects.create(username='jouse', email="email@email.com", password='password')
         date = datetime.now()
         url = reverse('todolist-list')
         data = {'owner': 1, 'date_created': date, 'list_name': 'test1', 'tasks': []}
@@ -106,21 +108,45 @@ class TodoListTestCase(APITestCase):
 
 class UserTestCase(APITestCase):
 
-    def test_create_user(self):
-        url = reverse('user-list')
-        data = {'username': 'test-user', 'password': 'test1234', 'email': 'test@user.com', 'lists': []}
-        response = self.client.post(url, data, format='json')
-        usuario = User.objects.first()
-        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
-        self.assertEquals(usuario.username, 'test-user')
+    def setUp(self):
+        self.user = User.objects.create(username='test-user', password='test1234', email='test@user.com')
 
-    def test_get_user(self):
-        user = User.objects.create(username='test-user', password='test1234', email='test@user.com')
+    def test_api_create_user(self):
+        url = reverse('user-list')
+        data = {'username': 'username', 'password': 'test1234', 'email': 'test@user.com'}
+        response = self.client.post(url, data, format='json')
+        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+
+    def test_api_get_user(self):
         url = reverse('user-detail', args=(1, ))
         response = self.client.get(url, format='json')
         self.assertEquals(response.status_code, status.HTTP_200_OK)
-        self.assertEquals(response.data['username'], user.username)
+        self.assertEquals(response.data['username'], self.user.username)
         self.assertEquals(response.data['lists'], [])
+
+    def test_api_update_user(self):
+        url = reverse('user-detail', args=(1,))
+
+        get_response = self.client.get(url, format='json')
+        self.assertEquals(get_response.status_code, status.HTTP_200_OK)
+        self.assertEquals(get_response.data['username'], 'test-user')
+
+        data = {'username': 'user', 'password': 'test1234', 'email': 'test@user.com'}
+        put_response = self.client.put(url, data, format='json')
+        self.assertEquals(put_response.status_code, status.HTTP_200_OK)
+
+        get_response = self.client.get(url, format='json')
+        self.assertEquals(get_response.status_code, status.HTTP_200_OK)
+        self.assertEquals(get_response.data['username'], 'user')
+
+    def test_api_delete_user(self):
+        url = reverse('user-detail', args=(1, ))
+
+        response = self.client.delete(url)
+        self.assertEquals(response.status_code, status.HTTP_204_NO_CONTENT)
+
+        get_response = self.client.get(url, format='json')
+        self.assertEquals(get_response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class TagsTests(APITestCase):

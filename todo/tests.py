@@ -3,6 +3,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
 from .models import *
+from .serializers import *
 
 
 class TaskModelTest(APITestCase):
@@ -120,3 +121,44 @@ class UserTestCase(APITestCase):
         self.assertEquals(response.status_code, status.HTTP_200_OK)
         self.assertEquals(response.data['username'], user.username)
         self.assertEquals(response.data['lists'], [])
+
+
+class TagsTests(APITestCase):
+    def setUp(self):
+        self.task_1 = Task.objects.create(title="test task", description="Desc of test task", date=datetime.now(),
+                                          priority=HIGH)
+        self.task_2 = Task.objects.create(title="test task 2", description="Desc of test task 2", date=datetime.now(),
+                                          priority=LOW)
+
+    def test_create_tag(self):
+        url = reverse('tag-list')
+        data = {'text': 'test tag', 'task': [self.task_1.pk, ]}
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(Tag.objects.count(), 1)
+        self.assertEqual(Tag.objects.get().text, 'test tag')
+
+    def test_get_tags(self):
+        Tag.objects.create(text="test get tag")
+        Tag.objects.create(text="test get tag 2")
+        url = reverse('tag-list')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+
+    def test_get_tag(self):
+        tag_1 = Tag.objects.create(text="test get tag")
+        tag_1.task.add(self.task_1)
+        url = reverse('tag-detail', args=(tag_1.pk,))
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'id': tag_1.pk, 'text': "test get tag", 'task': [self.task_1.pk, ]})
+
+    def test_put_tag(self):
+        test_tag = Tag.objects.create(text="test tag")
+        test_tag.task.add(self.task_1)
+        url = reverse('tag-detail', args=(test_tag.pk,))
+        data = {'text': 'new tag', 'task': [self.task_2.pk, ]}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, {'id': test_tag.pk, 'text': "new tag", 'task': [self.task_2.pk, ]})

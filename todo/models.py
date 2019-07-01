@@ -23,7 +23,7 @@ PRIORITY_CHOICES = (
 class TodoList(models.Model):
     owner = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='lists', null=True)
     list_name = models.CharField(max_length=255, default="")
-    creation_date = models.DateTimeField('date_created', default=datetime.now())
+    date_created = models.DateTimeField('creation date', default=datetime.now())
 
 
 class Task(models.Model):

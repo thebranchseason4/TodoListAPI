@@ -1,4 +1,6 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
+
 from todo.models import Task
 from todo.models import TodoList
 from .models import Tag, Task
@@ -11,11 +13,12 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class TodoListSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    owner = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), many=False)
+    tasks = TaskSerializer(many=True, read_only=True)
 
     class Meta:
         model = TodoList
-        fields = ('id', 'owner', 'list_name', 'creation_date')
+        fields = ('id', 'owner', 'list_name', 'date_created', 'tasks')
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -24,3 +27,12 @@ class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
         fields = ('id', 'text', 'task')
+
+
+class UserSerializer(serializers.ModelSerializer):
+    # user fields: 'id', 'first_name', 'last_name', 'email', 'password'
+    lists = TodoListSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = User
+        fields = ('id', 'username', 'lists')

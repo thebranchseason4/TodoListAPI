@@ -105,6 +105,43 @@ class TodoListTestCase(APITestCase):
         self.assertEqual(TodoList.objects.first().list_name, 'test1')
         self.assertEqual(TodoList.objects.first().owner, user)
 
+    def test_get_todo_list(self):
+        user = User.objects.create(username='jouse', email="email@email.com", password='password')
+        user2 = User.objects.create(username='jose', email="email@email.com", password='password')
+        date = datetime.now()
+        url = reverse('todolist-list')
+        TodoList.objects.create(owner=user, date_created=date, list_name='test1')
+        TodoList.objects.create(owner=user2, date_created=date, list_name='test2')
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(TodoList.objects.count(), 2)
+        self.assertEqual(TodoList.objects.first().owner, user)
+        self.assertEqual(TodoList.objects.last().owner, user2)
+
+    def test_put_todo_list(self):
+        user = User.objects.create(username='jouse', email="email@email.com", password='password')
+        date = datetime.now()
+        list= TodoList.objects.create(owner=user, date_created=date, list_name='test1')
+        url = reverse('todolist-detail', args=[list.pk, ])
+        data = {'owner': 1, 'date_created': date, 'list_name': 'testput', 'tasks': []}
+        response = self.client.put(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(TodoList.objects.count(), 1)
+        self.assertEqual(TodoList.objects.first().owner, user)
+        self.assertEqual(TodoList.objects.first().list_name, 'testput')
+
+    def test_getone_todo_list(self):
+        user = User.objects.create(username='jouse', email="email@email.com", password='password')
+        date = datetime.now()
+        list1 = TodoList.objects.create(owner=user, date_created=date.replace(tzinfo=None), list_name='testlist1')
+        url = reverse('todolist-detail', args=[list1.pk, ])
+        response = self.client.get(url, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(TodoList.objects.first().owner, user)
+        self.assertEqual(response.data['owner'], user.pk)
+        self.assertEqual(response.data['id'], list1.pk)
+        self.assertEqual(response.data['list_name'], 'testlist1')
+
 
 class UserTestCase(APITestCase):
 

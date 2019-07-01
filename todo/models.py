@@ -1,9 +1,8 @@
 from datetime import datetime
 
 from django.contrib.auth.models import User
-from django.utils import timezone
-
 from django.db import models
+from django.utils import timezone
 
 VERY_LOW = 1
 LOW = 2

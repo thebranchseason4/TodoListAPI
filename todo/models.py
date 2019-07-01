@@ -1,9 +1,8 @@
 from datetime import datetime
 
 from django.contrib.auth.models import User
-from django.utils import timezone
-
 from django.db import models
+from django.utils import timezone
 
 VERY_LOW = 1
 LOW = 2
@@ -39,4 +38,5 @@ class Task(models.Model):
 
 
 class Tag(models.Model):
-    pass
+    text = models.CharField(max_length=15)
+    task = models.ManyToManyField(Task, related_name='tags')
